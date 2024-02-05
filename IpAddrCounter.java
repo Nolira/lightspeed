@@ -2,25 +2,25 @@ import java.io.*;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class IpAddrCounter {
     public static void main(String[] args) {
-        File file = new File("ip_addresses");
-        BufferedReader reader = null;
+        if (args.length == 0) {
+            System.err.println("File not specified");
+            return;
+        }
 
         BitSet firstHalf = new BitSet();
         BitSet secondHalf = new BitSet();
         long counter = 0;
 
-        try {
+        try (BufferedReader reader = new BufferedReader(new FileReader(args[0]))) {
             String str;
-            reader = new BufferedReader(new FileReader(file));
 
             while ((str = reader.readLine()) != null) {
                 List<Integer> ipParts = Arrays.stream(str.split("\\."))
-                        .map(e -> Integer.valueOf(e))
-                        .collect(Collectors.toList());
+                        .map(Integer::valueOf)
+                        .toList();
 
                 int ip0 = ipParts.get(0);
                 int ip1 = ipParts.get(1);
@@ -44,13 +44,7 @@ public class IpAddrCounter {
             }
             System.out.println(counter);
         } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                reader.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            System.err.println(e.getMessage());
         }
     }
 
